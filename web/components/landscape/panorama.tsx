@@ -2,6 +2,7 @@
 import { useEffect, useRef } from "react";
 import { ArrowRight } from "lucide-react";
 import roomView from "./room-view.json";
+import { assetPath } from "./navigation";
 const baseFov = 2 * Math.atan(roomView.sensorWidthMm / roomView.baseAspect / (2 * roomView.lensMm)) * 180 / Math.PI;
 type Props = { t: (text: string) => string; resetToken: number; blocked: boolean; onStatus: (status: string) => void; onProduct: () => void };
 export default function Panorama({ t, resetToken, blocked, onStatus, onProduct }: Props) {
@@ -50,7 +51,7 @@ export default function Panorama({ t, resetToken, blocked, onStatus, onProduct }
         camera.updateProjectionMatrix(); renderer.setSize(target.clientWidth, target.clientHeight); draw();
       };
       const observer = new ResizeObserver(resize); observer.observe(target); resize();
-      new THREE.TextureLoader().load("/assets/room-panorama.webp?v=ecc-brand", image => {
+      new THREE.TextureLoader().load(`${assetPath("room-panorama.webp")}?v=ecc-brand`, image => {
         if (disposed) { image.dispose(); return; }
         texture = image; image.colorSpace = THREE.SRGBColorSpace; image.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
         material.map = image; material.opacity = 1; material.needsUpdate = true; loaded = true; draw(); target.dataset.readyMs=String(Math.round(performance.now()-startedAt)); statusRef.current("ready");

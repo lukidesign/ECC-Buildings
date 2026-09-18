@@ -2,6 +2,8 @@
 
 An interactive ECC spatial explorer for a connected city, apartment building, electrical room, and a conceptual low-voltage switchgear assembly. The interface supports Chinese and English.
 
+Live preview: [ECC Buildings on GitHub Pages](https://lukidesign.github.io/ECC-Buildings/).
+
 ![ECC Buildings city scene](web/public/assets/city.webp)
 
 ## Run locally
@@ -22,6 +24,8 @@ node --experimental-strip-types --test tests/*.test.mjs
 npx tsc --noEmit
 npm run build
 ```
+
+To build the static GitHub Pages preview locally, run `npm run build:pages` from `web/`. The generated site is in `web/pages-dist/`. Pushing to `main` rebuilds and publishes it through GitHub Actions.
 
 ## Explore
 

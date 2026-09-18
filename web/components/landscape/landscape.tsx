@@ -4,7 +4,7 @@ import { ArrowLeft, ArrowRight, Building2, ChevronDown, ChevronRight, Home, Info
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Panorama from "./panorama";
-import { parseLocation, paths, type SceneId } from "./navigation";
+import { appPath, assetPath, parseLocation, paths, type SceneId } from "./navigation";
 
 import { LanguageSwitch, useLanguage } from "./language";
 
@@ -57,9 +57,9 @@ export default function Landscape() {
     resize(); query.addEventListener("change", resize);
     window.addEventListener("popstate", readLocation);
     for (const id of steps) {
-      fetch(`/assets/${id}-metadata.json?v=ecc-brand`).then(r => { if (!r.ok) throw Error("metadata"); return r.json(); })
+      fetch(`${assetPath(`${id}-metadata.json`)}?v=ecc-brand`).then(r => { if (!r.ok) throw Error("metadata"); return r.json(); })
         .then(data => setMetadata(old => ({ ...old, [id]: data }))).catch(() => {});
-      const poster = new Image(); poster.src = `/assets/${id}.webp?v=ecc-brand`;
+      const poster = new Image(); poster.src = `${assetPath(`${id}.webp`)}?v=ecc-brand`;
     }
     return () => { query.removeEventListener("change", resize); window.removeEventListener("popstate", readLocation); clearTimeout(pendingTimer.current); };
   }, [readLocation]);
@@ -73,7 +73,7 @@ export default function Landscape() {
     stopTransition(); setProduct(false); setMediaError(false); setNotice("");
     const from = sceneRef.current;
     if (target === from) return;
-    window.history.pushState({}, "", paths[target]);
+    window.history.pushState({}, "", appPath(paths[target]));
     sceneRef.current = target; setScene(target);
     if (animate && from === "city" && target === "apartment" && !mobile && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
       transitionLive.current = true; document.documentElement.dataset.transitionResult = "started";
@@ -84,11 +84,11 @@ export default function Landscape() {
   const showProduct = () => {
     if (transition) return;
     modalOrigin.current = document.activeElement as HTMLElement;
-    window.history.pushState({ productEntry: true }, "", paths.room + "?mc=low_voltage_switchgear"); setProduct(true);
+    window.history.pushState({ productEntry: true }, "", appPath(paths.room) + "?mc=low_voltage_switchgear"); setProduct(true);
   };
   const closeProduct = () => {
     if (window.history.state?.productEntry) window.history.back();
-    else { window.history.replaceState({}, "", paths.room); setProduct(false); }
+    else { window.history.replaceState({}, "", appPath(paths.room)); setProduct(false); }
   };
   const activate = () => scene === "room" ? showProduct() : navigate(scene === "city" ? "apartment" : "room", scene === "city");
   const back = () => { stopTransition(); navigate(scene === "room" ? "apartment" : "city"); };
@@ -98,9 +98,9 @@ export default function Landscape() {
   return <main className={`explorer ${mobile ? "is-mobile" : ""}`} data-scene={scene} aria-busy={transition}>
     {(mobile || scene === "room") && <h1 className="sr-only">{t(titles[scene])}</h1>}
     <div className="scene-stage" ref={stage}>
-      <img key={scene} className="scene-image" src={`/assets/${scene}.webp?v=ecc-brand`} alt={scene === "city" ? t("A green city with office towers, apartments, hospital, airport and renewable energy") : scene === "apartment" ? t("White apartment complex with recessed windows, balconies, solar panels and EV charging") : t("Electrical room with modular low-voltage switchgear")} onError={() => setMediaError(true)} />
+      <img key={scene} className="scene-image" src={`${assetPath(`${scene}.webp`)}?v=ecc-brand`} alt={scene === "city" ? t("A green city with office towers, apartments, hospital, airport and renewable energy") : scene === "apartment" ? t("White apartment complex with recessed windows, balconies, solar panels and EV charging") : t("Electrical room with modular low-voltage switchgear")} onError={() => setMediaError(true)} />
       {ready && scene === "room" && !mobile && <Panorama t={t} resetToken={resetToken} blocked={product} onStatus={setPanoramaState} onProduct={showProduct} />}
-      {transition && <video ref={video} className="scene-transition" src="/assets/city-to-apartment.mp4?v=ecc-brand" poster="/assets/city.webp?v=ecc-brand" muted playsInline preload="auto" onPlaying={() => { document.documentElement.dataset.transitionResult="playing"; }} onEnded={() => stopTransition("completed")} onError={() => stopTransition("media-error")} aria-label={t("Moving from city to apartment")} />}
+      {transition && <video ref={video} className="scene-transition" src={`${assetPath("city-to-apartment.mp4")}?v=ecc-brand`} poster={`${assetPath("city.webp")}?v=ecc-brand`} muted playsInline preload="auto" onPlaying={() => { document.documentElement.dataset.transitionResult="playing"; }} onEnded={() => stopTransition("completed")} onError={() => stopTransition("media-error")} aria-label={t("Moving from city to apartment")} />}
       {!mobile && !transition && scene !== "room" && mark && <button className="scene-hotspot" style={hotspotStyle} onClick={activate} aria-label={`${t("Explore")} ${t(labels[scene])}`}><span className="beacon"/><span className="hotspot-label"><ArrowRight size={14}/>{t(labels[scene])}</span></button>}
       {!mobile && scene === "room" && panoramaState !== "ready" && <button className="scene-hotspot" style={hotspotStyle || { left: "64%", top: "60%" }} onClick={showProduct}><span className="beacon"/><span className="hotspot-label">{t("LV Switchgear")}</span></button>}
     </div>
@@ -111,7 +111,7 @@ export default function Landscape() {
     <div className="top-actions"><div className="top-note"><span className="status-dot"/>{t("ECC · Spatial Explorer")}</div><LanguageSwitch locale={locale} onChange={selectLocale}/></div>
     <aside className={`navigation-card ${menu ? "" : "collapsed"}`}><button className="card-heading" aria-expanded={menu} onClick={() => setMenu(!menu)}><Building2 size={21}/><span>{scene === "city" ? t("Explore buildings") : t("Building Applications")}</span><ChevronDown size={14}/></button>{menu && <div className="card-content">{scene === "city" ? <><p className="context-copy">{t("Discover connected spaces.")}<br/>{t("Start with the apartment complex.")}</p><button className="destination active" onClick={() => navigate("apartment", true)}><Building2 size={23}/><span>{t("Residential")}<br/><strong>{t("Apartment complex")}</strong></span><ArrowRight size={17}/></button><p className="scope-note">{t("One building. A complete journey.")}</p></> : <><div className="application"><Zap size={25}/><span>{t("Power Distribution")}</span></div><p className="context-copy">{scene === "apartment" ? t("Explore the electrical systems behind a connected residential building.") : t("Reliable power, from the incoming supply to every connected space.")}</p><div className="divider"/><button ref={entry} className="destination" onClick={activate}><span>{scene === "apartment" ? t("Electrical Room") : t("Modular LV switchgear")}</span><ArrowRight size={17}/></button></>}</div>}</aside>
     <section className="mobile-guide" aria-label={t("Scene navigation")}><span className="eyebrow">{scene === "city" ? t("01 / THE CITY") : scene === "apartment" ? t("02 / THE BUILDING") : t("03 / THE ELECTRICAL ROOM")}</span><h2>{t(titles[scene])}</h2><p>{scene === "city" ? t("Explore a connected city, one building at a time.") : scene === "apartment" ? t("Step inside the systems that bring a residential building to life.") : t("Discover modular power distribution inside the electrical room.")}</p><button ref={mobileEntry} className="mobile-entry" onClick={activate}>{t(labels[scene])}<ArrowRight size={18}/></button></section>
-    <div className="bottom-controls">{scene !== "city" && <button className="back-control" onClick={back}><img src={`/assets/${scene === "room" ? "apartment" : "city"}.webp?v=ecc-brand`} alt=""/><span><ArrowLeft size={16}/>{t("BACK")}</span></button>}</div>
+    <div className="bottom-controls">{scene !== "city" && <button className="back-control" onClick={back}><img src={`${assetPath(`${scene === "room" ? "apartment" : "city"}.webp`)}?v=ecc-brand`} alt=""/><span><ArrowLeft size={16}/>{t("BACK")}</span></button>}</div>
     {scene === "room" && !mobile && <div className="room-controls"><span>{t("Drag to look around · Arrow keys to rotate")}</span><button aria-label={t("Reset room view")} onClick={() => { setResetToken(v => v + 1); setNotice("Room view reset"); }}><RotateCcw size={18}/></button></div>}
     {scene === "city" && <p className="city-instruction"><span className="beacon small"/>{t("Select a building to explore")}</p>}
     <footer className="scene-footer">{t("ECC Spatial Explorer")}<span>·</span>{t("Independently modeled study")}<span>·</span>{t("Interactive demonstration")}</footer>
@@ -119,7 +119,7 @@ export default function Landscape() {
     <div className="sr-only" role="status" aria-live="polite">{(notice ? t(notice) : "") || (transition ? t("Moving to the apartment complex") : `${t(titles[scene])} ${t("loaded")}`)}</div>
     <Sheet open={product} onOpenChange={value => { if (!value) closeProduct(); }}><SheetContent className="product-sheet" showCloseButton={false} onCloseAutoFocus={event => { event.preventDefault(); (modalOrigin.current?.isConnected ? modalOrigin.current : mobile ? mobileEntry.current : entry.current)?.focus(); }}>
       <SheetHeader className="product-header"><div className="product-language"><LanguageSwitch locale={locale} onChange={selectLocale}/></div><span className="brand-rule"/><span className="product-brand">ECC</span><SheetTitle>{t("Low-voltage switchgear")}</SheetTitle><SheetDescription>{t("Modular power distribution demonstration")}</SheetDescription><button className="product-close" aria-label={t("Close product details")} onClick={closeProduct}><X size={22}/></button></SheetHeader>
-      <Tabs defaultValue="overview" className="product-tabs"><TabsList variant="line" className="product-tablist"><TabsTrigger value="overview">{t("OVERVIEW")}</TabsTrigger><TabsTrigger value="guide">{t("APPLICATION GUIDE")}</TabsTrigger></TabsList><TabsContent value="overview" className="product-content"><img className="product-image" src="/assets/product.webp" alt={t("Independently modeled modular low-voltage switchgear assembly")}/><span className="image-caption">{t("Independent visualization · not a configuration drawing")}</span><h2>{t("Power distribution.")}<br/>{t("Built around your needs.")}</h2><p>{t("This demonstration presents a modular low-voltage switchgear assembly. Separate functional units illustrate incoming supply, power distribution and motor control within a building.")}</p><h3>{t("A modular approach")}</h3><ul><li>{t("Power distribution and motor control in one system")}</li><li>{t("Adaptable functional units and cabinet arrangements")}</li><li>{t("Options for monitoring and integration")}</li></ul><p className="technical-note">{t("Conceptual visualization only. This is not a specified product or an engineering drawing. Equipment selection, ratings and compliance require project-specific verification.")}</p></TabsContent><TabsContent value="guide" className="product-content guide-content">
+      <Tabs defaultValue="overview" className="product-tabs"><TabsList variant="line" className="product-tablist"><TabsTrigger value="overview">{t("OVERVIEW")}</TabsTrigger><TabsTrigger value="guide">{t("APPLICATION GUIDE")}</TabsTrigger></TabsList><TabsContent value="overview" className="product-content"><img className="product-image" src={assetPath("product.webp")} alt={t("Independently modeled modular low-voltage switchgear assembly")}/><span className="image-caption">{t("Independent visualization · not a configuration drawing")}</span><h2>{t("Power distribution.")}<br/>{t("Built around your needs.")}</h2><p>{t("This demonstration presents a modular low-voltage switchgear assembly. Separate functional units illustrate incoming supply, power distribution and motor control within a building.")}</p><h3>{t("A modular approach")}</h3><ul><li>{t("Power distribution and motor control in one system")}</li><li>{t("Adaptable functional units and cabinet arrangements")}</li><li>{t("Options for monitoring and integration")}</li></ul><p className="technical-note">{t("Conceptual visualization only. This is not a specified product or an engineering drawing. Equipment selection, ratings and compliance require project-specific verification.")}</p></TabsContent><TabsContent value="guide" className="product-content guide-content">
         <h2>{t("Application guide")}</h2>
         <p>{t("Understand the role of each functional section in this conceptual electrical room.")}</p>
         <section className="guide-section"><h3>{t("Incoming supply")}</h3><p>{t("The incoming section connects the building supply to the distribution assembly and provides a place for isolation and protection.")}</p></section>
