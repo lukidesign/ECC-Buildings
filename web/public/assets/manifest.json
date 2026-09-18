@@ -1,0 +1,47 @@
+[
+  {
+    "name": "city",
+    "source": "assets/city.png",
+    "output": "web/public/assets/city.webp",
+    "width": 3840,
+    "height": 2160,
+    "bytes": 1144956,
+    "origin": "Independent Blender model and Cycles render"
+  },
+  {
+    "name": "apartment",
+    "source": "assets/apartment.png",
+    "output": "web/public/assets/apartment.webp",
+    "width": 3840,
+    "height": 2160,
+    "bytes": 1334440,
+    "origin": "Independent Blender model and Cycles render"
+  },
+  {
+    "name": "room",
+    "source": "assets/room.png",
+    "output": "web/public/assets/room.webp",
+    "width": 3840,
+    "height": 2160,
+    "bytes": 202256,
+    "origin": "Independent Blender model and Cycles render"
+  },
+  {
+    "name": "product",
+    "source": "assets/product.png",
+    "output": "web/public/assets/product.webp",
+    "width": 1600,
+    "height": 1200,
+    "bytes": 66066,
+    "origin": "Independent Blender model and Cycles render"
+  },
+  {
+    "name": "room-panorama",
+    "source": "assets/room-panorama.png",
+    "output": "web/public/assets/room-panorama.webp",
+    "width": 8192,
+    "height": 4096,
+    "bytes": 908622,
+    "origin": "Independent Blender model and Cycles render"
+  }
+]

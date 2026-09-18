@@ -1,0 +1,33 @@
+{
+  "scene": "city",
+  "resolution": [
+    3840,
+    2160
+  ],
+  "markers": {
+    "apartment": {
+      "world": [
+        -78,
+        -90,
+        18
+      ],
+      "x": 0.33067819476127625,
+      "y": 0.6418352425098419
+    }
+  },
+  "camera": {
+    "position": [
+      325.0,
+      -520.0,
+      396.0
+    ],
+    "rotation": [
+      1.0727434158325195,
+      -3.33424523546455e-08,
+      0.5483973026275635
+    ],
+    "lens": 35.0,
+    "shift_x": -0.0
+  },
+  "source": "Shared independent city scene; same apartment geometry at both endpoints"
+}

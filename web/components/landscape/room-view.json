@@ -1,0 +1,9 @@
+{
+  "revision": "visual-r2",
+  "eye": [0, -3.55, 1.7],
+  "target": [0, 3.5, 1.7],
+  "hotspot": [1.69, 3.34, 1.3],
+  "lensMm": 19.5,
+  "sensorWidthMm": 36,
+  "baseAspect": 1.7777777777777777
+}

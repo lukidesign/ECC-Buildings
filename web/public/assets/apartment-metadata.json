@@ -1,0 +1,33 @@
+{
+  "scene": "apartment",
+  "resolution": [
+    3840,
+    2160
+  ],
+  "markers": {
+    "electrical-room": {
+      "world": [
+        -65,
+        -83,
+        27.3
+      ],
+      "x": 0.6372789144515991,
+      "y": 0.1570875644683838
+    }
+  },
+  "camera": {
+    "position": [
+      -147.0,
+      -174.6999969482422,
+      80.0
+    ],
+    "rotation": [
+      1.0297342538833618,
+      4.867432323862886e-08,
+      -0.6556957960128784
+    ],
+    "lens": 51.0,
+    "shift_x": -0.03999999910593033
+  },
+  "source": "Shared independent city scene; same apartment geometry at both endpoints"
+}
