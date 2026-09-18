@@ -1,7 +1,7 @@
 [
   {
     "name": "city",
-    "source": "assets/city.png",
+    "source": ".local/renders/city.png",
     "output": "web/public/assets/city.webp",
     "width": 3840,
     "height": 2160,
@@ -10,7 +10,7 @@
   },
   {
     "name": "apartment",
-    "source": "assets/apartment.png",
+    "source": ".local/renders/apartment.png",
     "output": "web/public/assets/apartment.webp",
     "width": 3840,
     "height": 2160,
@@ -19,7 +19,7 @@
   },
   {
     "name": "room",
-    "source": "assets/room.png",
+    "source": ".local/renders/room.png",
     "output": "web/public/assets/room.webp",
     "width": 3840,
     "height": 2160,
@@ -28,7 +28,7 @@
   },
   {
     "name": "product",
-    "source": "assets/product.png",
+    "source": ".local/renders/product.png",
     "output": "web/public/assets/product.webp",
     "width": 1600,
     "height": 1200,
@@ -37,7 +37,7 @@
   },
   {
     "name": "room-panorama",
-    "source": "assets/room-panorama.png",
+    "source": ".local/renders/room-panorama.png",
     "output": "web/public/assets/room-panorama.webp",
     "width": 8192,
     "height": 4096,

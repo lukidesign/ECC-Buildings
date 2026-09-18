@@ -3,10 +3,10 @@ import bpy, math, json, sys, argparse
 from pathlib import Path
 from mathutils import Vector
 from bpy_extras.object_utils import world_to_camera_view
-ROOT=Path(__file__).resolve().parents[1]
+ROOT=Path(__file__).resolve().parents[2]
 p=argparse.ArgumentParser();p.add_argument('--motion',action='store_true');p.add_argument('--gray',action='store_true')
 a=p.parse_args(sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else [])
-bpy.ops.wm.open_mainfile(filepath=str(ROOT/'source/city-apartment.blend'))
+bpy.ops.wm.open_mainfile(filepath=str(ROOT/'models/city-apartment.blend'))
 s=bpy.context.scene;c=s.camera
 s.render.use_persistent_data=True
 bpy.data.objects['split_crown'].location.x=46
@@ -32,13 +32,13 @@ def render(path):
     s.render.filepath=str(path);bpy.ops.render.render(write_still=True)
 if a.motion:
     s.render.resolution_x=1920;s.render.resolution_y=1080;s.cycles.samples=16
-    folder=ROOT/'work/transition';folder.mkdir(parents=True,exist_ok=True)
+    folder=ROOT/'.local/work/transition';folder.mkdir(parents=True,exist_ok=True)
     for i in range(73):
         pose(i/72);render(folder/f'{i:04d}.png');print('FRAME',i,flush=True)
 elif a.gray:
     s.render.resolution_x=800;s.render.resolution_y=450;s.cycles.samples=12
     mat=bpy.data.materials.new('review_gray');mat.diffuse_color=(.5,.5,.5,1);s.view_layers[0].material_override=mat
-    folder=ROOT/'evidence/gray';folder.mkdir(parents=True,exist_ok=True)
+    folder=ROOT/'.local/evidence/gray';folder.mkdir(parents=True,exist_ok=True)
     for i in range(8):
         theta=i*math.pi/4;c.location=(-78+math.sin(theta)*86,-85-math.cos(theta)*86,48)
         c.rotation_euler=(Vector((-78,-85,12))-c.location).to_track_quat('-Z','Y').to_euler();c.data.lens=45;c.data.shift_x=0
@@ -46,12 +46,13 @@ elif a.gray:
     c.location=(-78,-85,125);c.rotation_euler=(Vector((-78,-85,0))-c.location).to_track_quat('-Z','Y').to_euler();c.data.lens=42
     render(folder/'apartment-top.png')
 else:
+    (ROOT/'.local/renders').mkdir(parents=True,exist_ok=True)
     s.render.resolution_x=3840;s.render.resolution_y=2160;s.cycles.samples=64
     for name,t,markers in [('city',0,{'apartment':(-78,-90,18)}),('apartment',1,{'electrical-room':(-65,-83,27.3)})]:
-        pose(t);render(ROOT/'assets'/f'{name}.png')
+        pose(t);render(ROOT/'.local/renders'/f'{name}.png')
         points={}
         for key,xyz in markers.items():
             point=world_to_camera_view(s,c,Vector(xyz));points[key]={'world':xyz,'x':point.x,'y':1-point.y}
         meta={'scene':name,'resolution':[3840,2160],'markers':points,'camera':{'position':list(c.location),'rotation':list(c.rotation_euler),'lens':c.data.lens,'shift_x':c.data.shift_x},'source':'Shared independent city scene; same apartment geometry at both endpoints'}
-        (ROOT/'assets'/f'{name}-metadata.json').write_text(json.dumps(meta,indent=2))
-        bpy.ops.wm.save_as_mainfile(filepath=str(ROOT/'source'/f'{name}-final.blend'))
+        (ROOT/'.local/renders'/f'{name}-metadata.json').write_text(json.dumps(meta,indent=2))
+        bpy.ops.wm.save_as_mainfile(filepath=str(ROOT/'models'/f'{name}-final.blend'))

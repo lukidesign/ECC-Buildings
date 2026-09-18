@@ -8,7 +8,7 @@ from pathlib import Path
 from mathutils import Vector
 from bpy_extras.object_utils import world_to_camera_view
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 ROOM_VIEW=json.loads((ROOT/'web/components/landscape/room-view.json').read_text())
 random.seed(784)
 argsv = sys.argv[sys.argv.index("--")+1:] if "--" in sys.argv else []
@@ -727,10 +727,11 @@ def main():
         scene.render.resolution_x=1600 if args.quality=="final" else 960
         scene.render.resolution_y=1200 if args.quality=="final" else 720
     tag=args.scene+("-"+args.view if args.view!="main" else "")
-    folder=ROOT/("evidence/gray" if args.quality=="gray" else "assets")
+    folder=ROOT/(".local/evidence/gray" if args.quality=="gray" else ".local/renders")
     folder.mkdir(parents=True,exist_ok=True)
     scene.render.filepath=str(folder/(tag+("-preview" if args.quality=="preview" else "")+".png"))
-    blend=ROOT/"source"/(tag+".blend")
+    blend=ROOT/"models"/(tag+".blend")
+    blend.parent.mkdir(parents=True,exist_ok=True)
     bpy.ops.wm.save_as_mainfile(filepath=str(blend))
     # Coordinates derive from actual camera projection, not manually placed UI.
     markers=({"electrical-room":(-65,-83,27.3)} if args.view=="apartment" else {"apartment":(-78,-90,18)}) if args.scene=="city" else ({"electrical-room":(13,2,27.3)} if args.scene=="apartment" else {"mns":ROOM_VIEW['hotspot']})

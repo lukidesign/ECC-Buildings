@@ -1,37 +1,12 @@
-# Local development, render intermediates, QA captures, and downloaded tools
-/assets/
-/evidence/
-/work/
+# Machine-local renders, QA evidence, archives, and migration records
+/.local/
+# Keep the existing Python virtual environment at its original absolute path.
 /tools/
-/DELIVERY_MANIFEST.json
 
-# Historical reference and internal acceptance documents
-/ABB_Buildings_MVP_SPEC.md
-/ABB_Buildings_页面分析.md
-/ECC_BRAND_SPEC.md
-/LANGUAGE_SPEC.md
-/VISUAL_REPAIR_SPEC.md
-
-# Publish only the editable scene masters and the scripts needed to regenerate them
-/source/*
-!/source/build_scenes.py
-!/source/render_delivery.py
-!/source/export_assets.mjs
-!/source/city-apartment.blend
-!/source/city-final.blend
-!/source/apartment-final.blend
-!/source/room.blend
-!/source/room-panorama.blend
-!/source/product.blend
-*.blend1
-
-# Starter documentation and examples unrelated to this application
-/web/README.md
-/web/examples/
-/web/db/
-/web/drizzle/
-/web/drizzle.config.ts
-/web/app/chatgpt-auth.ts
+# Intermediate Blender scenes and automatic backups
+/models/city.blend
+/models/apartment.blend
+*.blend[0-9]*
 
 # Credentials and generated state
 **/.env*
@@ -45,3 +20,7 @@
 **/__pycache__/
 **/*.pyc
 /web/*.tsbuildinfo
+
+# Dependency/build caches (the web project has additional local exclusions)
+**/node_modules/
+*.log
